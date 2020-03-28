@@ -37,14 +37,17 @@ export class GeoFire {
    * @param key The key of the location to retrieve.
    * @returns A promise that is fulfilled with the location of the given key.
    */
-  public get(key: string): Promise<number[]> {
+  public get(key: string): Promise<{}> {
     validateKey(key);
     return this._firebaseRef.child(key).once('value').then((dataSnapshot: GeoFireTypes.firebase.DataSnapshot) => {
       const snapshotVal = dataSnapshot.val();
       if (snapshotVal === null) {
         return null;
       } else {
-        return decodeGeoFireObject(snapshotVal);
+        return {
+          location: decodeGeoFireObject(snapshotVal),
+          data: snapshotVal.data,
+        }
       }
     });
   }
@@ -80,7 +83,7 @@ export class GeoFire {
    * @param location The [latitude, longitude] pair to add.
    * @returns A promise that is fulfilled when the write is complete.
    */
-  public set(keyOrLocations: string | any, location?: number[]): Promise<any> {
+  public set(keyOrLocations: string | any, location?: number[], customData?: any): Promise<any> {
     let locations;
     if (typeof keyOrLocations === 'string' && keyOrLocations.length !== 0) {
       // If this is a set for a single location, convert it into a object
@@ -109,6 +112,7 @@ export class GeoFire {
 
         const geohash: string = encodeGeohash(location);
         newData[key] = encodeGeoFireObject(location, geohash);
+        newData[key].data = customData
       }
     });
 

@@ -141,7 +141,7 @@ export class GeoQuery {
       keys.forEach((key: string) => {
         const locationDict = this._locationsTracked[key];
         if (typeof locationDict !== 'undefined' && locationDict.isInQuery) {
-          callback(key, locationDict.location, locationDict.distanceFromCenter);
+          callback(key, locationDict.location, locationDict.distanceFromCenter, locationDict.data);
         }
       });
     }
@@ -234,7 +234,8 @@ export class GeoQuery {
    * @param locationDataSnapshot A snapshot of the data stored for this location.
    */
   private _childAddedCallback(locationDataSnapshot: GeoFireTypes.firebase.DataSnapshot): void {
-    this._updateLocation(geoFireGetKey(locationDataSnapshot), decodeGeoFireObject(locationDataSnapshot.val()));
+    const allInfo = locationDataSnapshot.val()
+    this._updateLocation(geoFireGetKey(locationDataSnapshot), decodeGeoFireObject(allInfo), allInfo.data);
   }
 
   /**
@@ -243,7 +244,8 @@ export class GeoQuery {
    * @param locationDataSnapshot A snapshot of the data stored for this location.
    */
   private _childChangedCallback(locationDataSnapshot: GeoFireTypes.firebase.DataSnapshot): void {
-    this._updateLocation(geoFireGetKey(locationDataSnapshot), decodeGeoFireObject(locationDataSnapshot.val()));
+    const allInfo = locationDataSnapshot.val()
+    this._updateLocation(geoFireGetKey(locationDataSnapshot), decodeGeoFireObject(allInfo), allInfo.data);
   }
 
   /**
@@ -311,12 +313,12 @@ export class GeoQuery {
    * @param location The location as [latitude, longitude] pair
    * @param distanceFromCenter The distance from the center or null.
    */
-  private _fireCallbacksForKey(eventType: string, key: string, location?: number[], distanceFromCenter?: number): void {
+  private _fireCallbacksForKey(eventType: string, key: string, location?: number[], distanceFromCenter?: number, data?: any): void {
     this._callbacks[eventType].forEach((callback) => {
       if (typeof location === 'undefined' || location === null) {
-        callback(key, null, null);
+        callback(key, null, null, null);
       } else {
-        callback(key, location, distanceFromCenter);
+        callback(key, location, distanceFromCenter, data);
       }
     });
   }
@@ -497,7 +499,7 @@ export class GeoQuery {
    * @param key The key of the geofire location.
    * @param location The location as [latitude, longitude] pair.
    */
-  private _updateLocation(key: string, location?: number[]): void {
+  private _updateLocation(key: string, location?: number[], data?: any): void {
     validateLocation(location);
     // Get the key and location
     let distanceFromCenter: number, isInQuery;
@@ -513,16 +515,17 @@ export class GeoQuery {
       location,
       distanceFromCenter,
       isInQuery,
-      geohash: encodeGeohash(location)
+      geohash: encodeGeohash(location),
+      data,
     };
 
     // Fire the 'key_entered' event if the provided key has entered this query
     if (isInQuery && !wasInQuery) {
-      this._fireCallbacksForKey('key_entered', key, location, distanceFromCenter);
+      this._fireCallbacksForKey('key_entered', key, location, distanceFromCenter, data);
     } else if (isInQuery && oldLocation !== null && (location[0] !== oldLocation[0] || location[1] !== oldLocation[1])) {
-      this._fireCallbacksForKey('key_moved', key, location, distanceFromCenter);
+      this._fireCallbacksForKey('key_moved', key, location, distanceFromCenter, data);
     } else if (!isInQuery && wasInQuery) {
-      this._fireCallbacksForKey('key_exited', key, location, distanceFromCenter);
+      this._fireCallbacksForKey('key_exited', key, location, distanceFromCenter, data);
     }
   }
 }

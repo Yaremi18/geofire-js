@@ -6,6 +6,7 @@ export namespace GeoFireTypes {
     '.priority': string;
     g: string;
     l: number[];
+    data?: any;
   }
   export type KeyCallback = (
     key?: string,
@@ -17,6 +18,7 @@ export namespace GeoFireTypes {
     distanceFromCenter: number;
     isInQuery: boolean;
     geohash: string;
+    data: any;
   }
   export type ReadyCallback = () => void;
   export interface QueryCallbacks {
