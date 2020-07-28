@@ -1,7 +1,7 @@
 {
   "name": "geofire-with-custom-data",
   "description": "Location-based querying and filtering using Firebase",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "scripts": {
     "build": "rollup -c",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -10,13 +10,13 @@
     "prepare": "npm run build"
   },
   "author": "Firebase (https://firebase.google.com/)",
-  "homepage": "https://github.com/firebase/geofire-js/",
+  "homepage": "https://github.com/Yaremi18/geofire-js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/firebase/geofire-js.git"
+    "url": "https://github.com/Yaremi18/geofire-js"
   },
   "bugs": {
-    "url": "https://github.com/firebase/geofire-js/issues"
+    "url": "https://github.com/Yaremi18/geofire-js/issues"
   },
   "license": "MIT",
   "keywords": [
@@ -38,9 +38,6 @@
   ],
   "dependencies": {
     "@firebase/database-types": "0.x.x"
-  },
-  "peerDependencies": {
-    "firebase": "^2.4.0 || 3.x.x || 4.x.x || 5.x.x"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
